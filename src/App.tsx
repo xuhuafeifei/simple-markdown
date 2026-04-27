@@ -1,7 +1,8 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef } from 'react'
 import { SourceEditor } from './components/SourceEditor'
 import { DisplayEditor } from './components/DisplayEditor'
-import { fromMarkdown } from './codec/fromMarkdown'
+import { fromMarkdown, toMarkdown } from './codec/fromMarkdown'
+import type { Node } from 'prosemirror-model'
 
 type Mode = 'source' | 'display'
 
@@ -48,6 +49,8 @@ Inline: $E = mc^2$
 export default function App() {
   const [mode, setMode] = useState<Mode>('source')
   const [text, setText] = useState(DEFAULT_MD)
+  // Track the latest doc from Display mode editing
+  const displayDocRef = useRef<Node | null>(null)
 
   const doc = useMemo(() => {
     try {
@@ -57,9 +60,17 @@ export default function App() {
     }
   }, [text])
 
-  const toggleMode = useCallback(() => {
-    setMode(m => (m === 'source' ? 'display' : 'source'))
+  const handleDisplayDocChange = useCallback((doc: Node) => {
+    displayDocRef.current = doc
   }, [])
+
+  const toggleMode = useCallback(() => {
+    if (mode === 'display' && displayDocRef.current) {
+      // Serialize any Display edits back to text
+      setText(toMarkdown(displayDocRef.current))
+    }
+    setMode(m => (m === 'source' ? 'display' : 'source'))
+  }, [mode])
 
   return (
     <div className="app">
@@ -75,7 +86,7 @@ export default function App() {
         {mode === 'source' ? (
           <SourceEditor value={text} onChange={setText} />
         ) : (
-          <DisplayEditor doc={doc} />
+          <DisplayEditor doc={doc} onDocChange={handleDisplayDocChange} />
         )}
       </main>
     </div>
