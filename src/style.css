@@ -1,0 +1,158 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+.app {
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
+}
+
+.toolbar button {
+  padding: 6px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f5f5f5;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toolbar button:hover {
+  background: #e8e8e8;
+}
+
+.mode-label {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Source mode */
+.source-editor {
+  width: 100%;
+  flex: 1;
+  padding: 20px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #1a1a1a;
+  min-height: calc(100vh - 60px);
+}
+
+/* Display mode — ProseMirror */
+.display-editor {
+  padding: 20px;
+  min-height: calc(100vh - 60px);
+}
+
+.display-editor .ProseMirror {
+  outline: none;
+  min-height: 400px;
+}
+
+/* ProseMirror content styles */
+.display-editor h1 { font-size: 2em; font-weight: 700; margin: 0.5em 0; }
+.display-editor h2 { font-size: 1.5em; font-weight: 700; margin: 0.5em 0; }
+.display-editor h3 { font-size: 1.25em; font-weight: 700; margin: 0.5em 0; }
+.display-editor h4 { font-size: 1.1em; font-weight: 700; margin: 0.4em 0; }
+.display-editor h5 { font-size: 1em; font-weight: 700; margin: 0.3em 0; }
+.display-editor h6 { font-size: 0.9em; font-weight: 700; margin: 0.3em 0; }
+
+.display-editor p { margin: 0.5em 0; }
+
+.display-editor blockquote {
+  border-left: 3px solid #ccc;
+  padding-left: 16px;
+  color: #666;
+  margin: 0.5em 0;
+}
+
+.display-editor ul, .display-editor ol {
+  padding-left: 24px;
+  margin: 0.5em 0;
+}
+
+.display-editor li { margin: 0.2em 0; }
+
+.display-editor ul.task-list {
+  list-style: none;
+  padding-left: 4px;
+}
+
+.display-editor ul.task-list li::before {
+  content: '☐ ';
+}
+
+.display-editor pre {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  margin: 0.5em 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.display-editor code {
+  font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  background: #f0f0f0;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.display-editor pre code {
+  background: none;
+  padding: 0;
+}
+
+.display-editor pre.math-block {
+  background: #fafafa;
+}
+
+.display-editor hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 1em 0;
+}
+
+.display-editor .math-inline {
+  font-family: 'KaTeX_Main', 'Times New Roman', serif;
+  font-style: italic;
+}
+
+.display-editor img {
+  max-width: 100%;
+}
+
+.display-editor a {
+  color: #2563eb;
+  text-decoration: underline;
+}
