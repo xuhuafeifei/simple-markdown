@@ -156,3 +156,40 @@ body {
   color: #2563eb;
   text-decoration: underline;
 }
+
+/* CodeMirror inside code blocks */
+.code-block-node {
+  position: relative;
+  margin: 0.5em 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.code-block-node .code-lang-label {
+  display: block;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: #888;
+  background: #f0f0f0;
+  border-bottom: 1px solid #e0e0e0;
+  font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+}
+
+.code-block-node .cm-host {
+  padding: 0;
+}
+
+.code-block-node .cm-editor {
+  min-height: 2em;
+}
+
+.code-block-node .cm-editor .cm-scroller {
+  padding: 8px 12px;
+}
+
+.code-block-node .cm-editor.cm-focused {
+  outline: none;
+  background: #f5f5f5;
+}

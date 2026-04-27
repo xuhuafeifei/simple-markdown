@@ -5,6 +5,7 @@ import { history, undo, redo } from 'prosemirror-history'
 import { keymap } from 'prosemirror-keymap'
 import { baseKeymap } from 'prosemirror-commands'
 import { schema } from '../schema'
+import { CodeBlockView } from '../nodes/CodeBlockView'
 import type { Node } from 'prosemirror-model'
 
 interface DisplayEditorProps {
@@ -19,60 +20,40 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
   useEffect(() => {
     if (!hostRef.current) return
 
-    const plugins = [
-      history(),
-      keymap({
-        'Mod-z': undo,
-        'Mod-y': redo,
-        'Mod-Shift-z': redo,
-      }),
-      keymap(baseKeymap),
-    ]
+    const state = EditorState.create({
+      doc,
+      schema,
+      plugins: [
+        history(),
+        keymap({
+          'Mod-z': undo,
+          'Mod-y': redo,
+          'Mod-Shift-z': redo,
+        }),
+        keymap(baseKeymap),
+      ],
+    })
 
-    if (viewRef.current) {
-      // Update existing view with new doc
-      const state = EditorState.create({ doc, schema, plugins })
-      viewRef.current.setProps({ state })
-    } else {
-      const state = EditorState.create({ doc, schema, plugins })
-      const view = new EditorView(hostRef.current, {
-        state,
-        dispatchTransaction(tr) {
-          const newState = view.state.apply(tr)
-          view.updateState(newState)
-          onDocChange?.(newState.doc)
-        },
-      })
-      viewRef.current = view
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-  // Only run on mount — doc updates are handled by the transaction dispatch
+    const view = new EditorView(hostRef.current, {
+      state,
+      nodeViews: {
+        code_block: (node, _view, getPos) =>
+          new CodeBlockView(node, _view, getPos),
+      },
+      dispatchTransaction(tr) {
+        const newState = view.state.apply(tr)
+        view.updateState(newState)
+        onDocChange?.(newState.doc)
+      },
+    })
 
-  // Sync external doc changes (e.g., from Source mode)
-  useEffect(() => {
-    const view = viewRef.current
-    if (!view) return
-    // Only update if the doc actually changed externally
-    if (view.state.doc !== doc && view.state.doc.eq(doc) === false) {
-      const state = EditorState.create({
-        doc,
-        schema,
-        plugins: view.state.plugins,
-      })
-      view.setProps({ state })
-    }
-  }, [doc])
+    viewRef.current = view
 
-  useEffect(() => {
     return () => {
-      viewRef.current?.destroy()
+      view.destroy()
       viewRef.current = null
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <div ref={hostRef} className="display-editor" />
-}
-
-export function getDisplayDoc(view: EditorView | null): Node | null {
-  return view?.state.doc ?? null
 }
