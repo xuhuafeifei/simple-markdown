@@ -8,6 +8,7 @@ import { schema } from '../schema'
 import { CodeBlockView } from '../nodes/CodeBlockView'
 import { MermaidView } from '../nodes/MermaidView'
 import { Meta2dView } from '../nodes/Meta2dView'
+import { MathBlockView } from '../nodes/MathBlockView'
 import type { Node } from 'prosemirror-model'
 
 interface DisplayEditorProps {
@@ -45,6 +46,8 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
           if (lang === 'meta2d') return new Meta2dView(node, _view, getPos)
           return new CodeBlockView(node, _view, getPos)
         },
+        math_block: (node, _view, getPos) =>
+          new MathBlockView(node, _view, getPos),
       },
       dispatchTransaction(tr) {
         const newState = view.state.apply(tr)

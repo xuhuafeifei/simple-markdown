@@ -1,3 +1,5 @@
+@import 'katex/dist/katex.css';
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -292,4 +294,37 @@ body {
   display: flex;
   justify-content: center;
   overflow-x: auto;
+}
+
+/* Math block */
+.math-block-node {
+  margin: 0.5em 0;
+}
+
+.math-block-edit {
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  outline: none;
+}
+
+.math-block-edit:focus {
+  border-color: #2563eb;
+  background: #f5f5ff;
+}
+
+.math-block-render {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  overflow-x: auto;
+}
+
+.math-block-render:hover {
+  background: #fafafa;
 }
