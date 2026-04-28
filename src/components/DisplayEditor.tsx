@@ -29,13 +29,13 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
       schema,
       plugins: [
         history(),
-        headingEnterPlugin,
         keymap({
           'Mod-z': undo,
           'Mod-y': redo,
           'Mod-Shift-z': redo,
         }),
         keymap(baseKeymap),
+        headingEnterPlugin,   // MUST be after baseKeymap — PM dispatches in reverse
       ],
     })
 
