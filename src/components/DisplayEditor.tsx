@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { EditorView } from 'prosemirror-view'
 import { EditorState } from 'prosemirror-state'
 import { history, undo, redo } from 'prosemirror-history'
@@ -10,6 +10,8 @@ import { MermaidView } from '../nodes/MermaidView'
 import { Meta2dView } from '../nodes/Meta2dView'
 import { MathBlockView } from '../nodes/MathBlockView'
 import { headingEnterPlugin } from '../plugins/headingEnter'
+import { imagePastePlugin } from '../plugins/imagePaste'
+import { FloatingToolbar } from './FloatingToolbar'
 import type { Node } from 'prosemirror-model'
 
 interface DisplayEditorProps {
@@ -20,6 +22,7 @@ interface DisplayEditorProps {
 export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
+  const [toolbarPos, setToolbarPos] = useState<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
     if (!hostRef.current) return
@@ -35,6 +38,7 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
           'Mod-Shift-z': redo,
         }),
         keymap(baseKeymap),
+        imagePastePlugin,
         headingEnterPlugin,   // MUST be after baseKeymap — PM dispatches in reverse
       ],
     })
@@ -55,6 +59,26 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
         const newState = view.state.apply(tr)
         view.updateState(newState)
         onDocChange?.(newState.doc)
+
+        requestAnimationFrame(() => {
+          if (view.isDestroyed) return
+          const sel = view.state.selection
+          if (sel.empty) {
+            setToolbarPos(null)
+            return
+          }
+          try {
+            const start = view.coordsAtPos(sel.from)
+            const end = view.coordsAtPos(sel.to)
+            // center above the selection
+            setToolbarPos({
+              x: (start.left + end.right) / 2,
+              y: start.top - 48,
+            })
+          } catch {
+            setToolbarPos(null)
+          }
+        })
       },
     })
 
@@ -66,5 +90,10 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <div ref={hostRef} className="display-editor" />
+  return (
+    <>
+      <div ref={hostRef} className="display-editor" />
+      <FloatingToolbar view={viewRef.current} pos={toolbarPos} />
+    </>
+  )
 }

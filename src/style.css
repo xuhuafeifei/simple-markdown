@@ -352,3 +352,60 @@ body {
 .math-block-render:hover {
   background: #fafafa;
 }
+
+/* Floating toolbar */
+.floating-toolbar {
+  position: fixed;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  transform: translate(-50%, -100%);
+  user-select: none;
+}
+
+.floating-toolbar button {
+  padding: 3px 8px;
+  font-size: 13px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  background: #fafafa;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.floating-toolbar button:hover {
+  background: #eee;
+}
+
+.toolbar-sep {
+  width: 1px;
+  height: 20px;
+  background: #e0e0e0;
+  margin: 0 2px;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.color-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.1);
+  display: inline-block;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+  border-color: rgba(0,0,0,0.3);
+}
