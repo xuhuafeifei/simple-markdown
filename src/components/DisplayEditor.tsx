@@ -4,6 +4,7 @@ import { EditorState } from 'prosemirror-state'
 import { history, undo, redo } from 'prosemirror-history'
 import { keymap } from 'prosemirror-keymap'
 import { baseKeymap } from 'prosemirror-commands'
+import { inputRules, textblockTypeInputRule, undoInputRule } from 'prosemirror-inputrules'
 import { schema } from '../schema'
 import { CodeBlockView } from '../nodes/CodeBlockView'
 import { MermaidView } from '../nodes/MermaidView'
@@ -36,6 +37,17 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
           'Mod-z': undo,
           'Mod-y': redo,
           'Mod-Shift-z': redo,
+          Backspace: undoInputRule,
+        }),
+        // Heading input rules: # h1, ## h2, etc.
+        inputRules({
+          rules: [
+            textblockTypeInputRule(
+              /^(#{1,6})\s$/,
+              schema.nodes.heading,
+              match => ({ level: match[1].length }),
+            ),
+          ],
         }),
         enterPlugin,
         keymap(baseKeymap),
