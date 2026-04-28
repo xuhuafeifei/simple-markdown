@@ -5,7 +5,7 @@ const nodes = {
     content: 'block+',
   },
 
-  heading: {
+heading: {
     content: 'inline*',
     group: 'block',
     attrs: { level: { default: 1 } },

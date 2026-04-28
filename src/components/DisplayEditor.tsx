@@ -9,7 +9,6 @@ import { CodeBlockView } from '../nodes/CodeBlockView'
 import { MermaidView } from '../nodes/MermaidView'
 import { Meta2dView } from '../nodes/Meta2dView'
 import { MathBlockView } from '../nodes/MathBlockView'
-import { headingEnterPlugin } from '../plugins/headingEnter'
 import { imagePastePlugin } from '../plugins/imagePaste'
 import { FloatingToolbar } from './FloatingToolbar'
 import type { Node } from 'prosemirror-model'
@@ -39,7 +38,6 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
         }),
         keymap(baseKeymap),
         imagePastePlugin,
-        headingEnterPlugin,   // MUST be after baseKeymap — PM dispatches in reverse
       ],
     })
 
