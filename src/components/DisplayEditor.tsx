@@ -10,6 +10,7 @@ import { MermaidView } from '../nodes/MermaidView'
 import { Meta2dView } from '../nodes/Meta2dView'
 import { MathBlockView } from '../nodes/MathBlockView'
 import { imagePastePlugin } from '../plugins/imagePaste'
+import { enterPlugin } from '../plugins/enterPlugin'
 import { FloatingToolbar } from './FloatingToolbar'
 import type { Node } from 'prosemirror-model'
 
@@ -36,6 +37,7 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
           'Mod-y': redo,
           'Mod-Shift-z': redo,
         }),
+        enterPlugin,
         keymap(baseKeymap),
         imagePastePlugin,
       ],
