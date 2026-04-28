@@ -89,6 +89,20 @@ body {
 .display-editor h5 { font-size: 1em; font-weight: 700; margin: 0.3em 0; }
 .display-editor h6 { font-size: 0.9em; font-weight: 700; margin: 0.3em 0; }
 
+/* Heading editing state — normal size + grey prefix while cursor is inside */
+.display-editor h1.heading-editing { font-size: 1em; }
+.display-editor h1.heading-editing::before { content: '# '; color: #b0b0b0; font-weight: 400; }
+.display-editor h2.heading-editing { font-size: 1em; }
+.display-editor h2.heading-editing::before { content: '## '; color: #b0b0b0; font-weight: 400; }
+.display-editor h3.heading-editing { font-size: 1em; }
+.display-editor h3.heading-editing::before { content: '### '; color: #b0b0b0; font-weight: 400; }
+.display-editor h4.heading-editing { font-size: 1em; }
+.display-editor h4.heading-editing::before { content: '#### '; color: #b0b0b0; font-weight: 400; }
+.display-editor h5.heading-editing { font-size: 1em; }
+.display-editor h5.heading-editing::before { content: '##### '; color: #b0b0b0; font-weight: 400; }
+.display-editor h6.heading-editing { font-size: 1em; }
+.display-editor h6.heading-editing::before { content: '###### '; color: #b0b0b0; font-weight: 400; }
+
 .display-editor p { margin: 0.5em 0; }
 
 .display-editor blockquote {

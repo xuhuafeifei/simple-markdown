@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { EditorView } from 'prosemirror-view'
-import { EditorState } from 'prosemirror-state'
+import { EditorView, Decoration, DecorationSet } from 'prosemirror-view'
+import { EditorState, Plugin } from 'prosemirror-state'
 import { history, undo, redo } from 'prosemirror-history'
 import { keymap } from 'prosemirror-keymap'
 import { baseKeymap } from 'prosemirror-commands'
@@ -14,6 +14,22 @@ import { imagePastePlugin } from '../plugins/imagePaste'
 import { enterPlugin } from '../plugins/enterPlugin'
 import { FloatingToolbar } from './FloatingToolbar'
 import type { Node } from 'prosemirror-model'
+
+const headingEditPlugin = new Plugin({
+  props: {
+    decorations(state) {
+      const { $from } = state.selection
+      const block = $from.parent
+      if (block.type === schema.nodes.heading) {
+        const pos = $from.start($from.depth)
+        return DecorationSet.create(state.doc, [
+          Decoration.node(pos, pos + block.nodeSize, { class: 'heading-editing' }),
+        ])
+      }
+      return DecorationSet.empty
+    },
+  },
+})
 
 interface DisplayEditorProps {
   doc: Node
@@ -50,6 +66,7 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
           ],
         }),
         enterPlugin,
+        headingEditPlugin,
         keymap(baseKeymap),
         imagePastePlugin,
       ],
@@ -71,6 +88,7 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
         const newState = view.state.apply(tr)
         view.updateState(newState)
         onDocChange?.(newState.doc)
+        console.log(JSON.stringify(newState.doc.toJSON(), null, 2))
 
         requestAnimationFrame(() => {
           if (view.isDestroyed) return
