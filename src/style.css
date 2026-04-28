@@ -80,14 +80,11 @@ body {
 
 /* ProseMirror content styles */
 .display-editor h1 { font-size: 2em; font-weight: 700; margin: 0.5em 0; }
-.display-editor h1::before { content: '# '; color: #b0b0b0; font-weight: 400; }
 .display-editor h2 { font-size: 1.5em; font-weight: 700; margin: 0.5em 0; }
-.display-editor h2::before { content: '## '; color: #b0b0b0; font-weight: 400; }
 .display-editor h3 { font-size: 1.25em; font-weight: 700; margin: 0.5em 0; }
-.display-editor h3::before { content: '### '; color: #b0b0b0; font-weight: 400; }
-.display-editor h4::before { content: '#### '; color: #b0b0b0; font-weight: 400; }
-.display-editor h5::before { content: '##### '; color: #b0b0b0; font-weight: 400; }
-.display-editor h6::before { content: '###### '; color: #b0b0b0; font-weight: 400; }
+.display-editor h4 { font-weight: 700; margin: 0.5em 0; }
+.display-editor h5 { font-weight: 700; margin: 0.5em 0; }
+.display-editor h6 { font-weight: 700; margin: 0.5em 0; }
 .display-editor h4 { font-size: 1.1em; font-weight: 700; margin: 0.4em 0; }
 .display-editor h5 { font-size: 1em; font-weight: 700; margin: 0.3em 0; }
 .display-editor h6 { font-size: 0.9em; font-weight: 700; margin: 0.3em 0; }
