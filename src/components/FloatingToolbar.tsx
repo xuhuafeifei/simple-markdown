@@ -27,11 +27,14 @@ export function FloatingToolbar({ view, pos }: FloatingToolbarProps) {
     const { from, to } = state.selection
     if (from === to) return
 
-    const hasMark = state.doc.rangeHasMark(from, to, markType)
     const mark = markType.create(attrs)
+    const hasExact = state.doc.rangeHasMark(from, to, mark)
 
-    if (hasMark) {
+    if (hasExact) {
       view.dispatch(state.tr.removeMark(from, to, mark))
+    } else if (attrs && state.doc.rangeHasMark(from, to, markType)) {
+      // Replace existing mark of same type with different attrs (e.g. color)
+      view.dispatch(state.tr.removeMark(from, to, markType).addMark(from, to, mark))
     } else {
       view.dispatch(state.tr.addMark(from, to, mark))
     }
