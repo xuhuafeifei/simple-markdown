@@ -9,6 +9,7 @@ import { CodeBlockView } from '../nodes/CodeBlockView'
 import { MermaidView } from '../nodes/MermaidView'
 import { Meta2dView } from '../nodes/Meta2dView'
 import { MathBlockView } from '../nodes/MathBlockView'
+import { headingEnterPlugin } from '../plugins/headingEnter'
 import type { Node } from 'prosemirror-model'
 
 interface DisplayEditorProps {
@@ -28,6 +29,7 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
       schema,
       plugins: [
         history(),
+        headingEnterPlugin,
         keymap({
           'Mod-z': undo,
           'Mod-y': redo,

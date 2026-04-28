@@ -1,4 +1,5 @@
 import { EditorView as CmView } from '@codemirror/view'
+import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language'
 import { javascript } from '@codemirror/lang-javascript'
 import { java } from '@codemirror/lang-java'
 import { python } from '@codemirror/lang-python'
@@ -25,14 +26,9 @@ const langExtensions: Record<string, () => unknown> = {
   xml: () => xml(),
 }
 
-const cmDarkTheme = CmView.baseTheme({
-  '.cm-editor': {
-    fontSize: '14px',
-    lineHeight: '1.5',
-  },
-  '.cm-editor.cm-focused': {
-    outline: 'none',
-  },
+const cmTheme = CmView.baseTheme({
+  '.cm-editor': { fontSize: '14px', lineHeight: '1.5' },
+  '.cm-editor.cm-focused': { outline: 'none' },
 })
 
 export class CodeBlockView implements NodeView {
@@ -42,25 +38,43 @@ export class CodeBlockView implements NodeView {
   private getPos: () => number | undefined
   private outerView: PmView
   private updating = false
+  private langLabel!: HTMLElement
 
   constructor(node: Node, view: PmView, getPos: () => number | undefined) {
-    this.lang = node.attrs.lang || ''
+    this.lang = (node.attrs.lang as string) || ''
     this.getPos = getPos
     this.outerView = view
 
     this.dom = document.createElement('div')
     this.dom.className = 'code-block-node'
 
-    // Lang label
-    if (this.lang) {
-      const label = document.createElement('span')
-      label.className = 'code-lang-label'
-      label.textContent = this.lang
-      label.contentEditable = 'false'
-      this.dom.appendChild(label)
-    }
+    // Toolbar with language label
+    const toolbar = document.createElement('div')
+    toolbar.className = 'code-block-toolbar'
+    toolbar.contentEditable = 'false'
 
-    // Editor host
+    this.langLabel = document.createElement('span')
+    this.langLabel.className = 'code-lang-label'
+    this.langLabel.textContent = this.lang || 'text'
+    this.langLabel.title = 'Click to change language'
+    this.langLabel.addEventListener('click', (e) => {
+      e.stopPropagation()
+      this.promptSwitchLang()
+    })
+
+    const copyBtn = document.createElement('button')
+    copyBtn.textContent = 'Lang'
+    copyBtn.title = 'Switch language'
+    copyBtn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      this.promptSwitchLang()
+    })
+
+    toolbar.appendChild(this.langLabel)
+    toolbar.appendChild(copyBtn)
+    this.dom.appendChild(toolbar)
+
+    // CodeMirror host
     const cmHost = document.createElement('div')
     cmHost.className = 'cm-host'
     this.dom.appendChild(cmHost)
@@ -68,10 +82,37 @@ export class CodeBlockView implements NodeView {
     this.createCm(cmHost, node)
   }
 
+  private promptSwitchLang() {
+    const newLang = prompt('Language:', this.lang)
+    if (newLang == null) return
+    const lang = newLang.trim()
+
+    const pos = this.getPos()
+    if (pos == null) return
+
+    // Update ProseMirror attribute — update() will be called with the new lang
+    // update() will be called with the new lang and handle CM rebuild
+    const tr = this.outerView.state.tr.setNodeAttribute(pos, 'lang', lang)
+    this.outerView.dispatch(tr)
+  }
+
+  private rebuildCm() {
+    const prevText = this.cm ? this.cm.state.doc.toString() : ''
+    if (this.cm) {
+      const host = this.cm.dom.parentElement!
+      this.cm.destroy()
+      host.innerHTML = ''
+      this.cm = null
+      // Use a dummy node to pass text to createCm
+      this.createCm(host, { textContent: prevText } as Node)
+    }
+  }
+
   private createCm(host: HTMLElement, node: Node) {
     const langExt = langExtensions[this.lang]
     const extensions = [
-      cmDarkTheme,
+      cmTheme,
+      syntaxHighlighting(defaultHighlightStyle),
       CmView.editable.of(true),
       CmView.updateListener.of(update => {
         if (update.docChanged && !this.updating) {
@@ -93,27 +134,27 @@ export class CodeBlockView implements NodeView {
     const pos = this.getPos()
     if (pos == null) return
     const text = this.cm.state.doc.toString()
-    const tr = this.outerView.state.tr
+
     const node = this.outerView.state.doc.nodeAt(pos)
     if (!node || node.type.name !== 'code_block') return
 
-    // Replace text content
-    const from = pos + 1 // after the opening of code_block
-    const to = from + (node.textContent.length)
+    const from = pos + 1
+    const to = from + node.textContent.length
     this.outerView.dispatch(
-      tr.replaceWith(from, to, this.outerView.state.schema.text(text))
+      this.outerView.state.tr.replaceWith(from, to, this.outerView.state.schema.text(text)),
     )
   }
 
   update(node: Node): boolean {
-    if (!this.cm) return false
     const newText = node.textContent
     const newLang = (node.attrs.lang as string) || ''
 
-    // Update language label
-    const label = this.dom.querySelector('.code-lang-label')
-    if (label) {
-      label.textContent = newLang
+    if (newLang !== this.lang || !this.cm) {
+      // Language changed or CM not ready — rebuild
+      this.lang = newLang
+      this.langLabel.textContent = newLang || 'text'
+      this.rebuildCm()
+      return true
     }
 
     if (newText !== this.cm.state.doc.toString()) {
@@ -135,12 +176,10 @@ export class CodeBlockView implements NodeView {
     this.cm = null
   }
 
-  // ProseMirror shouldn't handle events inside this node — CM takes over
   stopEvent(): boolean {
     return true
   }
 
-  // Allow CM to handle selection
   ignoreMutation(): boolean {
     return true
   }
