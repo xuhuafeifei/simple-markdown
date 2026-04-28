@@ -6,6 +6,7 @@ import { keymap } from 'prosemirror-keymap'
 import { baseKeymap } from 'prosemirror-commands'
 import { schema } from '../schema'
 import { CodeBlockView } from '../nodes/CodeBlockView'
+import { MermaidView } from '../nodes/MermaidView'
 import type { Node } from 'prosemirror-model'
 
 interface DisplayEditorProps {
@@ -37,8 +38,12 @@ export function DisplayEditor({ doc, onDocChange }: DisplayEditorProps) {
     const view = new EditorView(hostRef.current, {
       state,
       nodeViews: {
-        code_block: (node, _view, getPos) =>
-          new CodeBlockView(node, _view, getPos),
+        code_block: (node, _view, getPos) => {
+          const lang = node.attrs.lang as string
+          if (lang === 'mermaid') return new MermaidView(node, _view, getPos)
+          // if (lang === 'meta2d') return new Meta2dView(node, _view, getPos)
+          return new CodeBlockView(node, _view, getPos)
+        },
       },
       dispatchTransaction(tr) {
         const newState = view.state.apply(tr)
